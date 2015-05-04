@@ -1,0 +1,17 @@
+{
+  "cards": [
+    {
+      "question": "What is your favorite color?",
+      "description": "In order to proceed, answer me, these questions three.",
+      "answer": "Blue. No - Yellllowwww."
+    },{
+      "question": "What floats in the water?",
+      "description": "How to determine whether someone is a witch",
+      "answer": "Very small pebbles. Wood!"
+    },{
+      "question": "What say you?",
+      "description": "I am Arthur, King of the Britains",
+      "answer": "None shall pass!"
+    }
+  ]
+}
