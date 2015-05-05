@@ -1,18 +1,26 @@
 <json-flashcard>
 
+    <header class="container">
+        <div class="row">
+            <div class="six columns">
+                <h4 if="{ state.hasJSON }" class="grey">JSON Flashcards</h4>
+            </div>
+        </div>
+    </header>
+
     <div if="{ !state.hasJSON }" class="container">
         <h1>Welcome to JSON Flashcards</h1>
         <p>JSON Flashcards allows you to review a series of flashcards created with JSON. To get started, paste the directory of your JSON file in the input below.</p>
         <form onsubmit="{ getJSON }">
-            <input class="u-full-width" name="jsonURLInput" type="text" placeholder="http://github.com/<username>/<project>/<file>" value="/JSON-Flashcard/src/assets/demo/cards.json">
+            <input class="u-full-width" name="jsonURLInput" type="text" placeholder="http://github.com/<username>/<project>/<file>" value="{ state.inputValue }">
             <button class="button-primary" type="submit">Get JSON</button>
         </form>
 
         <div if="{state.sets.length}" class="previously-added">
             <h4>Recently Used</h4>
             <div class="list">
-                <div each="{ link, i in state.sets }" class="list-item">
-                    <a href="javascript:void(0)" onclick="{ parent.selectPreviousSet }">{ link }</a>
+                <div each="{ state.sets }" class="list-item">
+                    <a href="javascript:void(0)" onclick="{ parent.getRecentlyUsed }">{ title ? title : link }</a>
                 </div>
             </div>
         </div>
@@ -25,7 +33,7 @@
                     <button type="button" onclick="{ previousCard }"><i class="fa fa-chevron-left"></i>Previous Card</button>
                 </div>
                 <div class="four columns align-center card-summary">
-                    Card { getCardIndex() } of { state.cards.length }
+                    Card { getCardIndex() } of { cards.length }
                 </div>
                 <div class="four columns align-right">
                     <button type="button" onclick="{ nextCard }">Next Card<i class="fa fa-chevron-right"></i> </button>
@@ -34,7 +42,7 @@
             <hr>
         </div>
 
-        <card each="{ state.cards }" if="{ active }">
+        <card each="{ cards }" if="{ active }">
             <div class="question-container">
                 <h3>{ question }</h3>
                 <p>{ description }</p>
@@ -64,11 +72,16 @@
 
         self.updateState = function (state) {
             self.state = state;
+            self.cards = state.sets.length ? state.sets[state.activeIndex].cards : [];
             self.update();
         };
 
         self.getJSON = function () {
             dispatcher.trigger(constants.GET_JSON_FLASHCARDS, self.jsonURLInput.value);
+        };
+
+        self.getRecentlyUsed = function (e) {
+            dispatcher.trigger(constants.GET_JSON_FLASHCARDS, e.item.link);
         };
 
         self.showAnswer = function () {
@@ -80,7 +93,7 @@
         };
 
         self.getCardIndex = function () {
-            return _.findIndex(self.state.cards, 'active') + 1;
+            return _.findIndex(self.cards, 'active') + 1;
         };
 
         self.nextCard = function () {

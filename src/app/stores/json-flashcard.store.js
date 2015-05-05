@@ -6,8 +6,9 @@ var $ = require("./../common");
 
 var defaultState = {
     hasJSON: false,
-    activeLink: "",
-    cards: [],
+    inputValue: "",
+    currentLink: "",
+    activeIndex: 0,
     sets: []
 };
 
@@ -17,54 +18,62 @@ function getInitialState () {
 }
 
 function getJSONFlashcards (url) {
-    this.state.activeLink = url;
+    var convertedURL = $.convertURL(url);
 
-    $.getJSON(url)
+    this.state.currentLink = url;
+    this.state.inputValue = "";
+
+    $.getJSON(convertedURL.prod)
         .catch(function (err) { throw err; })
         .then(getJSONFlashcardsSuccess.bind(this));
 }
 
 function getJSONFlashcardsSuccess (response) {
     var state = this.state;
+    var setIndex = _.findIndex(state.sets, { link: state.currentLink });
 
-    state.cards = response.cards;
-    state.hasJSON = true;
-
-    if (_.contains(state.sets, state.activeLink)) {
-        _.pull(state.sets, state.activeLink)
+    if (setIndex !== -1) {
+        state.sets.splice(setIndex, 1);
     }
 
-    state.sets.unshift(state.activeLink);
+    response.link = state.currentLink;
+
+    state.hasJSON = true;
+    state.activeIndex = 0;
+    state.sets.unshift(response);
 
     saveLocalSets.call(this);
 
-    var isActiveCard = _.findIndex(state.cards, 'active');
-
-    if (isActiveCard === -1 && state.cards.length > 0) {
-        state.cards[0].active = true;
-    }
+    _.forEach(state.sets[state.activeIndex].cards, function (card, i) {
+        card.active = i === 0;
+    });
 
     this.trigger(constants.JSON_FLASHCARD_CHANGE, state);
 }
 
 function showAnswer () {
-    var card = _.find(this.state.cards, 'active');
+    var state = this.state;
+    var cardSet = state.sets[state.activeIndex];
+    var card = _.find(cardSet.cards, 'active');
     card.showAnswer = true;
     this.trigger(constants.JSON_FLASHCARD_CHANGE, this.state);
 }
 
 function hideAnswer () {
-    var card = _.find(this.state.cards, 'active');
+    var state = this.state;
+    var cardSet = state.sets[state.activeIndex];
+    var card = _.find(cardSet.cards, 'active');
     card.showAnswer = false;
     this.trigger(constants.JSON_FLASHCARD_CHANGE, this.state);
 }
 
 function showPreviousCard () {
     var state = this.state;
-    var activeIndex = _.findIndex(state.cards, 'active');
-    activeIndex = --activeIndex === -1 ? state.cards.length - 1 : activeIndex;
+    var cardSet = state.sets[state.activeIndex];
+    var activeIndex = _.findIndex(cardSet.cards, 'active');
+    activeIndex = --activeIndex === -1 ? cardSet.cards.length - 1 : activeIndex;
 
-    _.forEach(state.cards, function (card, index) {
+    _.forEach(cardSet.cards, function (card, index) {
         card.active = activeIndex === index;
     });
 
@@ -73,10 +82,11 @@ function showPreviousCard () {
 
 function showNextCard () {
     var state = this.state;
-    var activeIndex = _.findIndex(state.cards, 'active');
-    activeIndex = ++activeIndex === state.cards.length ? 0 : activeIndex;
+    var cardSet = state.sets[state.activeIndex];
+    var activeIndex = _.findIndex(cardSet.cards, 'active');
+    activeIndex = ++activeIndex === cardSet.cards.length ? 0 : activeIndex;
 
-    _.forEach(state.cards, function (card, index) {
+    _.forEach(cardSet.cards, function (card, index) {
         card.active = activeIndex === index;
     });
 
@@ -101,7 +111,6 @@ function saveLocalSets () {
 
 var JSONFlashcardStore = function () {
     this.state = _.cloneDeep(defaultState);
-
     this.state.sets = getLocalSets.call(this);
 
     dispatcher.addStore(this);
