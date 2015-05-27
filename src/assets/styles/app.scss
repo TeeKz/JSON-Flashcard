@@ -49,10 +49,9 @@ header {
 
 .card-container {
   display: block;
-  min-height: 495px;
+  min-height: 391px;
   border: 1px solid #CCC;
   border-radius: 6px;
-  overflow: hidden;
   background-color: #FFF;
 }
 
@@ -69,8 +68,8 @@ header {
 }
 
 .flashcard-toolbar {
-  background-color: #FFFFFF;
-  padding: 25px;
+  padding: 15px;
+  text-align: center;
 
   hr {
     margin: 15px 0 0 0;
@@ -97,6 +96,34 @@ header {
 
 .toolbar-wrapper {
   padding: 15px 0;
+}
+
+#prevCardButton {
+  position: absolute;
+  top: 50%;
+  left: -75px;
+  width: 60px;
+  height: 60px;
+  margin-top: -30px;
+  text-align: center;
+  padding: 12px;
+  font-size: 21px;
+  color: #999;
+  border-radius: 50px;
+}
+
+#nextCardButton {
+  position: absolute;
+  top: 50%;
+  right: -75px;
+  width: 60px;
+  height: 60px;
+  margin-top: -30px;
+  text-align: center;
+  padding: 12px;
+  font-size: 21px;
+  color: #999;
+  border-radius: 50px;
 }
 
 

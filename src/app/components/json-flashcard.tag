@@ -5,11 +5,14 @@
             <div class="six columns">
                 <h4 if="{ state.hasJSON }" class="grey">JSON Flashcards</h4>
             </div>
+            <div if="{ state.hasJSON }" class="six columns align-center toolbar-wrapper">
+                <a href="javascript:void(0)" onclick="{ changeSet }">Change Flashcard Set</a>
+            </div>
         </div>
     </header>
 
     <div if="{ !state.hasJSON }" class="container">
-        <h1>Welcome to JSON Flashcards</h1>
+        <h1>Welcome to JSON Flashcards!</h1>
         <p>JSON Flashcards allows you to review a series of flashcards created with JSON. To get started, paste the directory of your JSON file in the input below.</p>
         <form onsubmit="{ getJSON }">
             <input class="u-full-width" name="jsonURLInput" type="text" placeholder="http://github.com/<username>/<project>/<file>" value="{ state.inputValue }">
@@ -27,20 +30,8 @@
     </div>
 
     <div if="{ state.hasJSON }" class="container card-container">
-        <div class="flashcard-toolbar">
-            <div class="row">
-                <div class="four columns ">
-                    <button type="button" onclick="{ previousCard }"><i class="fa fa-chevron-left"></i>Previous Card</button>
-                </div>
-                <div class="four columns align-center card-summary">
-                    Card { getCardIndex() } of { cards.length }
-                </div>
-                <div class="four columns align-right">
-                    <button type="button" onclick="{ nextCard }">Next Card<i class="fa fa-chevron-right"></i> </button>
-                </div>
-            </div>
-            <hr>
-        </div>
+        <button id="prevCardButton" type="button" onclick="{ previousCard }"><i class="fa fa-chevron-left"></i></button>
+        <button id="nextCardButton" type="button" onclick="{ nextCard }"><i class="fa fa-chevron-right"></i></button>
 
         <card each="{ cards }" if="{ active }">
             <div class="question-container">
@@ -55,10 +46,11 @@
             </div>
         </card>
     </div>
-
-    <div if="{ state.hasJSON }" class="row align-center toolbar-wrapper">
-        <a href="javascript:void(0)" onclick="{ changeSet }">Change Flashcard Set</a>
+    <div class="flashcard-toolbar">
+        <span>Card { getCardIndex() } of { cards.length }</span
     </div>
+
+
 
 
 
